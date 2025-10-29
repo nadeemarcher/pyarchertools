@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Text Formatter</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+            position: relative;
+        }
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        .back-btn {
+            position: absolute;
+            left: 30px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: 2px solid white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            text-decoration: none;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+        .back-btn:hover {
+            background: white;
+            color: #667eea;
+        }
+        .content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            padding: 30px;
+        }
+        .panel {
+            display: flex;
+            flex-direction: column;
+        }
+        .panel h2 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 1.5em;
+        }
+        textarea {
+            flex: 1;
+            min-height: 400px;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            resize: vertical;
+            transition: border-color 0.3s;
+        }
+        textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        .output-box {
+            flex: 1;
+            height: 400px;
+            max-height: 400px;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            background: #f9f9f9;
+            overflow-y: auto;
+            text-align: justify;
+        }
+        .output-box h1, .output-box h2, .output-box h3, 
+        .output-box h4, .output-box h5, .output-box h6 {
+            font-weight: bold;
+            margin: 15px 0 10px 0;
+            color: #333;
+        }
+        .output-box p {
+            margin-bottom: 10px;
+            line-height: 1.6;
+        }
+        .output-box strong {
+            font-weight: bold;
+        }
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        button {
+            flex: 1;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .btn-format {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        .btn-format:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        .btn-copy {
+            background: #28a745;
+            color: white;
+        }
+        .btn-copy:hover {
+            background: #218838;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(40, 167, 69, 0.4);
+        }
+        .btn-clear {
+            background: #dc3545;
+            color: white;
+        }
+        .btn-clear:hover {
+            background: #c82333;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(220, 53, 69, 0.4);
+        }
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #28a745;
+            color: white;
+            padding: 15px 25px;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            opacity: 0;
+            transform: translateY(-20px);
+            transition: all 0.3s;
+            z-index: 1000;
+        }
+        .notification.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        @media (max-width: 768px) {
+            .content {
+                grid-template-columns: 1fr;
+            }
+            .back-btn {
+                position: static;
+                transform: none;
+                display: inline-block;
+                margin-bottom: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <a href="/" class="back-btn">← Dashboard</a>
+            <h1>✨ Text Formatter</h1>
+            <p>Paste your text, format it, and copy the result!</p>
+        </div>
+        <div class="content">
+            <div class="panel">
+                <h2>📝 Input Text</h2>
+                <textarea id="inputText" placeholder="Paste your text here..."></textarea>
+                <div class="button-group">
+                    <button class="btn-format" onclick="formatText()">Format Text</button>
+                    <button class="btn-clear" onclick="clearAll()">Clear All</button>
+                </div>
+            </div>
+            <div class="panel">
+                <h2>✅ Formatted Output</h2>
+                <div id="outputBox" class="output-box">
+                    <p style="color: #999; text-align: center; margin-top: 150px;">
+                        Your formatted text will appear here...
+                    </p>
+                </div>
+                <div class="button-group">
+                    <button class="btn-copy" onclick="copyToClipboard()">📋 Copy to Clipboard</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="notification" class="notification">Text copied to clipboard!</div>
+
+    <script>
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        function processBoldText(text) {
+            return text.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+        }
+
+        function formatText() {
+            const input = document.getElementById('inputText').value;
+            const output = document.getElementById('outputBox');
+            
+            if (!input.trim()) {
+                output.innerHTML = '<p style="color: #999; text-align: center;">Please enter some text first!</p>';
+                return;
+            }
+
+            let formatted = input.replace(/\n\s*\n\s*\n+/g, '\n\n');
+            let lines = formatted.split('\n');
+            let html = '';
+            
+            for (let line of lines) {
+                line = line.trim();
+                if (line === '') continue;
+                
+                let isEntireLineBold = line.match(/^\*\*(.+?)\*\*$/);
+                let isHeading = false;
+                let headingLevel = 'h3';
+                
+                if (isEntireLineBold) {
+                    isHeading = true;
+                    line = isEntireLineBold[1];
+                } else if (line.length < 60 && !line.match(/[,;:]$/)) {
+                    isHeading = true;
+                } else if (line === line.toUpperCase() && line.length > 2 && line.length < 100) {
+                    isHeading = true;
+                    headingLevel = 'h2';
+                } else if (line.match(/^\d+[\.\)]\s+/)) {
+                    isHeading = true;
+                }
+                
+                if (isHeading) {
+                    line = line.replace(/\.\s*$/, '');
+                    line = escapeHtml(line);
+                    line = processBoldText(line);
+                    html += `<${headingLevel}>${line}</${headingLevel}>`;
+                } else {
+                    line = escapeHtml(line);
+                    line = processBoldText(line);
+                    html += `<p>${line}</p>`;
+                }
+            }
+            
+            output.innerHTML = html || '<p style="color: #999;">No content to display.</p>';
+        }
+
+        function copyToClipboard() {
+            const output = document.getElementById('outputBox');
+            const htmlContent = output.innerHTML;
+            
+            if (!htmlContent || htmlContent.includes('Your formatted text will appear here')) {
+                showNotification('Nothing to copy!', false);
+                return;
+            }
+            
+            const blob = new Blob([htmlContent], { type: 'text/html' });
+            const plainText = output.innerText;
+            
+            const clipboardItem = new ClipboardItem({
+                'text/html': blob,
+                'text/plain': new Blob([plainText], { type: 'text/plain' })
+            });
+            
+            navigator.clipboard.write([clipboardItem]).then(() => {
+                showNotification('Text copied with formatting!', true);
+            }).catch(err => {
+                const div = document.createElement('div');
+                div.contentEditable = true;
+                div.innerHTML = htmlContent;
+                div.style.position = 'fixed';
+                div.style.opacity = '0';
+                
+                document.body.appendChild(div);
+                
+                const range = document.createRange();
+                range.selectNodeContents(div);
+                const selection = window.getSelection();
+                selection.removeAllRanges();
+                selection.addRange(range);
+                
+                try {
+                    document.execCommand('copy');
+                    showNotification('Text copied with formatting!', true);
+                } catch (e) {
+                    showNotification('Copy failed!', false);
+                }
+                
+                document.body.removeChild(div);
+                selection.removeAllRanges();
+            });
+        }
+
+        function clearAll() {
+            document.getElementById('inputText').value = '';
+            document.getElementById('outputBox').innerHTML = 
+                '<p style="color: #999; text-align: center; margin-top: 150px;">Your formatted text will appear here...</p>';
+        }
+
+        function showNotification(message, success) {
+            const notif = document.getElementById('notification');
+            notif.textContent = message;
+            notif.style.background = success ? '#28a745' : '#dc3545';
+            notif.classList.add('show');
+            
+            setTimeout(() => {
+                notif.classList.remove('show');
+            }, 2000);
+        }
+    </script>
+</body>
+</html>

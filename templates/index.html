@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tools Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        .header {
+            text-align: center;
+            color: white;
+            padding: 40px 20px;
+            margin-bottom: 40px;
+        }
+        .header h1 {
+            font-size: 3em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+        .tools-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            padding: 20px;
+        }
+        .tool-card {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            text-decoration: none;
+            color: inherit;
+            display: block;
+            position: relative;
+            overflow: hidden;
+        }
+        .tool-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .tool-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.4);
+        }
+        .tool-icon {
+            font-size: 3em;
+            margin-bottom: 20px;
+            display: block;
+        }
+        .tool-card h3 {
+            color: #667eea;
+            font-size: 1.5em;
+            margin-bottom: 15px;
+        }
+        .tool-card p {
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+        .tool-status {
+            display: inline-block;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: bold;
+            background: #28a745;
+            color: white;
+        }
+        .tool-status.coming-soon {
+            background: #ffc107;
+            color: #333;
+        }
+        .quick-stats {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 40px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        .stat-item {
+            text-align: center;
+        }
+        .stat-number {
+            font-size: 2.5em;
+            font-weight: bold;
+            color: #667eea;
+            display: block;
+        }
+        .stat-label {
+            color: #666;
+            font-size: 0.9em;
+            margin-top: 5px;
+        }
+        .footer {
+            text-align: center;
+            color: white;
+            padding: 30px;
+            margin-top: 40px;
+            opacity: 0.8;
+        }
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2em;
+            }
+            .tools-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚀 Tools Dashboard</h1>
+            <p>Your All-in-One Productivity Suite</p>
+        </div>
+
+        <div class="quick-stats">
+            <div class="stat-item">
+                <span class="stat-number">2</span>
+                <span class="stat-label">Active Tools</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-number">∞</span>
+                <span class="stat-label">Possibilities</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-number">100%</span>
+                <span class="stat-label">Free to Use</span>
+            </div>
+        </div>
+
+        <div class="tools-grid">
+            <!-- Text Formatter Tool -->
+            <a href="/text-formatter" class="tool-card">
+                <span class="tool-icon">📝</span>
+                <h3>Text Formatter</h3>
+                <p>Format your text by removing empty lines, detecting headings, making them bold, handling markdown syntax, and justifying content. Perfect for cleaning up academic papers and documents.</p>
+                <span class="tool-status">Active</span>
+            </a>
+
+            <!-- DOCX Cover Merger Tool -->
+            <a href="/docx-cover-merger" class="tool-card">
+                <span class="tool-icon">📄</span>
+                <h3>DOCX Cover Page Merger</h3>
+                <p>Add a cover page to multiple DOCX files at once. Preserves all formatting, headers, footers, styles, and images. Upload one template and multiple content files to merge them automatically.</p>
+                <span class="tool-status">Active</span>
+            </a>
+
+            <!-- Placeholder for future tools -->
+            <div class="tool-card" onclick="alert('Coming Soon!')">
+                <span class="tool-icon">📊</span>
+                <h3>Data Analyzer</h3>
+                <p>Analyze CSV and Excel files, create visualizations, and generate insights from your data with powerful analytics tools.</p>
+                <span class="tool-status coming-soon">Coming Soon</span>
+            </div>
+
+            <div class="tool-card" onclick="alert('Coming Soon!')">
+                <span class="tool-icon">🎨</span>
+                <h3>Image Tools</h3>
+                <p>Resize, crop, compress, and convert images. Batch processing available for multiple files at once.</p>
+                <span class="tool-status coming-soon">Coming Soon</span>
+            </div>
+
+            <div class="tool-card" onclick="alert('Coming Soon!')">
+                <span class="tool-icon">📄</span>
+                <h3>PDF Utilities</h3>
+                <p>Merge, split, compress, and convert PDF files. Extract text and images from PDFs effortlessly.</p>
+                <span class="tool-status coming-soon">Coming Soon</span>
+            </div>
+
+            <div class="tool-card" onclick="alert('Coming Soon!')">
+                <span class="tool-icon">🔐</span>
+                <h3>Password Generator</h3>
+                <p>Generate strong, secure passwords with customizable options. Check password strength and security.</p>
+                <span class="tool-status coming-soon">Coming Soon</span>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>© 2025 Tools Dashboard | Built for Productivity</p>
+        </div>
+    </div>
+</body>
+</html>

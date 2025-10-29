@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DOCX Cover Page Merger</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+            position: relative;
+        }
+        .header h1 { font-size: 2.5em; margin-bottom: 10px; }
+        .back-btn {
+            position: absolute;
+            left: 30px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: 2px solid white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+        .back-btn:hover { background: white; color: #667eea; }
+        .content { padding: 40px; }
+        .upload-section {
+            margin-bottom: 30px;
+            padding: 25px;
+            border: 2px dashed #e0e0e0;
+            border-radius: 12px;
+            background: #f9f9f9;
+            transition: all 0.3s;
+        }
+        .upload-section:hover { border-color: #667eea; background: #f5f7ff; }
+        .upload-section h3 { color: #667eea; margin-bottom: 15px; font-size: 1.3em; }
+        .upload-section p { color: #666; margin-bottom: 15px; line-height: 1.6; }
+        .file-input-wrapper { position: relative; overflow: hidden; display: inline-block; width: 100%; }
+        .file-input-wrapper input[type=file] { position: absolute; left: -9999px; }
+        .file-input-label {
+            display: block;
+            padding: 15px;
+            background: white;
+            border: 2px solid #667eea;
+            border-radius: 8px;
+            color: #667eea;
+            text-align: center;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+        .file-input-label:hover { background: #667eea; color: white; }
+        .file-input-label.has-file { background: #28a745; border-color: #28a745; color: white; }
+        .file-list {
+            margin-top: 15px;
+            padding: 15px;
+            background: white;
+            border-radius: 8px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        .file-item {
+            padding: 8px;
+            margin-bottom: 5px;
+            background: #f0f0f0;
+            border-radius: 5px;
+            font-size: 0.9em;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .file-icon { color: #667eea; }
+        .process-btn {
+            width: 100%;
+            padding: 18px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 20px;
+        }
+        .process-btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+        }
+        .process-btn:disabled { background: #ccc; cursor: not-allowed; }
+        .loader-container { display: none; text-align: center; padding: 40px; }
+        .loader-container.active { display: block; }
+        .loader {
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid #667eea;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .loader-text { color: #667eea; font-size: 1.2em; font-weight: bold; margin-bottom: 10px; }
+        .loader-progress { color: #666; font-size: 0.9em; }
+        .success-message, .error-message {
+            display: none;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            margin-top: 20px;
+            font-weight: bold;
+        }
+        .success-message {
+            background: #d4edda;
+            border: 2px solid #28a745;
+            color: #155724;
+        }
+        .error-message {
+            background: #f8d7da;
+            border: 2px solid #dc3545;
+            color: #721c24;
+        }
+        .success-message.active, .error-message.active { display: block; }
+        .info-box {
+            background: #e7f3ff;
+            border-left: 4px solid #667eea;
+            padding: 15px;
+            margin-bottom: 30px;
+            border-radius: 5px;
+        }
+        /* make the "How it works" header a bit smaller */
+        .info-box h4 { color: #667eea; margin-bottom: 8px; font-size: 0.95em; }
+        .info-box ul { margin-left: 20px; color: #666; line-height: 1.8; font-size: 0.95em; }
+        .highlight {
+            background: #d4edda;
+            border-left: 4px solid #28a745;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+        }
+        .highlight strong { color: #155724; }
+        @media (max-width: 768px) {
+            .back-btn { position: static; transform: none; display: inline-block; margin-bottom: 15px; }
+            .content { padding: 20px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <a href="/" class="back-btn">← Dashboard</a>
+            <h1>📄 DOCX Cover Page Merger</h1>
+            <p>Add content files into a formatted cover page template</p>
+        </div>
+        <div class="content">
+            <div class="highlight">
+                <strong>✅ Preserves headers, footers, styles, spacing, fonts, images and formatting</strong>
+            </div>
+
+            <div class="info-box">
+                <h4>ℹ️ How it works:</h4>
+                <ul>
+                    <li>Upload ONE template file with cover page, headers and footers</li>
+                    <li>Upload MULTIPLE content files to be inserted after the cover</li>
+                    <li>Merges documents while preserving styles, headers, footers and layout</li>
+                    <li>Content is added after the cover with proper page breaks</li>
+                    <li>Download merged files (ZIP if multiple, single file if one)</li>
+                </ul>
+            </div>
+
+            <form id="mergeForm" enctype="multipart/form-data">
+                <div class="upload-section">
+                    <h3>1️⃣ Upload Template File (Single File)</h3>
+                    <p>Select a DOCX file with your cover page, headers, footers, and ALL formatting</p>
+                    <div class="file-input-wrapper">
+                        <input type="file" id="templateInput" name="template" accept=".docx" required onchange="handleTemplateUpload(event)">
+                        <label for="templateInput" class="file-input-label" id="templateLabel">
+                            📄 Choose Template File
+                        </label>
+                    </div>
+                    <div id="templateInfo" class="file-list" style="display: none;"></div>
+                </div>
+
+                <div class="upload-section">
+                    <h3>2️⃣ Upload Content Files (Multiple Files)</h3>
+                    <p>Select multiple DOCX files whose content will be added after the cover page</p>
+                    <div class="file-input-wrapper">
+                        <input type="file" id="contentInput" name="content_files[]" accept=".docx" multiple required onchange="handleContentUpload(event)">
+                        <label for="contentInput" class="file-input-label" id="contentLabel">
+                            📚 Choose Content Files
+                        </label>
+                    </div>
+                    <div id="contentInfo" class="file-list" style="display: none;"></div>
+                </div>
+
+                <button type="submit" class="process-btn" id="processBtn">
+                    🚀 Process Files
+                </button>
+            </form>
+
+            <div class="loader-container" id="loaderContainer">
+                <div class="loader"></div>
+                <div class="loader-text">Processing your files...</div>
+                <div class="loader-progress" id="loaderProgress">Merging documents with proper formatting...</div>
+            </div>
+
+            <div class="success-message" id="successMessage">
+                ✅ Files processed successfully! Download starting...
+            </div>
+
+            <div class="error-message" id="errorMessage">
+                ❌ <span id="errorText">An error occurred. Please try again.</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let templateFile = null;
+        let contentFiles = [];
+
+        function handleTemplateUpload(event) {
+            const file = event.target.files[0];
+            if (file) {
+                templateFile = file;
+                document.getElementById('templateLabel').textContent = '✅ ' + file.name;
+                document.getElementById('templateLabel').classList.add('has-file');
+                
+                const infoDiv = document.getElementById('templateInfo');
+                infoDiv.style.display = 'block';
+                infoDiv.innerHTML = '<div class="file-item"><span class="file-icon">📄</span><span>' + file.name + ' (' + formatFileSize(file.size) + ')</span></div>';
+            }
+        }
+
+        function handleContentUpload(event) {
+            const files = Array.from(event.target.files);
+            if (files.length > 0) {
+                contentFiles = files;
+                document.getElementById('contentLabel').textContent = '✅ ' + files.length + ' file(s) selected';
+                document.getElementById('contentLabel').classList.add('has-file');
+                
+                const infoDiv = document.getElementById('contentInfo');
+                infoDiv.style.display = 'block';
+                infoDiv.innerHTML = files.map(function(file) {
+                    return '<div class="file-item"><span class="file-icon">📄</span><span>' + file.name + ' (' + formatFileSize(file.size) + ')</span></div>';
+                }).join('');
+            }
+        }
+
+        function formatFileSize(bytes) {
+            if (bytes < 1024) return bytes + ' B';
+            if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(2) + ' KB';
+            return (bytes / (1024 * 1024)).toFixed(2) + ' MB';
+        }
+
+        // Handle form submission - send to backend
+        document.getElementById('mergeForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const loaderContainer = document.getElementById('loaderContainer');
+            const successMessage = document.getElementById('successMessage');
+            const errorMessage = document.getElementById('errorMessage');
+            const processBtn = document.getElementById('processBtn');
+
+            // Hide previous messages
+            successMessage.classList.remove('active');
+            errorMessage.classList.remove('active');
+            
+            // Show loader
+            loaderContainer.classList.add('active');
+            processBtn.disabled = true;
+
+            try {
+                // Create FormData and send to backend
+                const formData = new FormData();
+                formData.append('template', templateFile);
+                
+                for (let file of contentFiles) {
+                    formData.append('content_files[]', file);
+                }
+
+                // Send to server
+                const response = await fetch('/api/merge-docx', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.error || 'Server error');
+                }
+
+                // Get the file blob from response
+                const blob = await response.blob();
+                
+                // Get filename from Content-Disposition header
+                const contentDisposition = response.headers.get('Content-Disposition');
+                let filename = 'merged_documents.zip';
+                if (contentDisposition) {
+                    const filenameMatch = contentDisposition.match(/filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/);
+                    if (filenameMatch && filenameMatch[1]) {
+                        filename = filenameMatch[1].replace(/['"]/g, '');
+                    }
+                }
+
+                // Create download link
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = filename;
+                document.body.appendChild(a);
+                a.click();
+                window.URL.revokeObjectURL(url);
+                document.body.removeChild(a);
+
+                // Show success
+                loaderContainer.classList.remove('active');
+                successMessage.classList.add('active');
+                
+                setTimeout(function() {
+                    successMessage.classList.remove('active');
+                    processBtn.disabled = false;
+                }, 3000);
+
+            } catch (error) {
+                console.error('Error:', error);
+                loaderContainer.classList.remove('active');
+                document.getElementById('errorText').textContent = 'Error: ' + error.message;
+                errorMessage.classList.add('active');
+                processBtn.disabled = false;
+            }
+        });
+    </script>
+</body>
+</html>
